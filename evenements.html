@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Événements — L'Orfèvre</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.events-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; margin-top: 56px; }
+.event-card { background: var(--charbon); border: 1px solid rgba(255,255,255,0.04); overflow: hidden; transition: all 0.3s; }
+.event-card:hover { border-color: rgba(201,168,76,0.2); transform: translateY(-4px); }
+.event-visual { height: 220px; display: flex; align-items: center; justify-content: center; font-size: 64px; background: linear-gradient(135deg, var(--fumee), var(--charbon)); position: relative; }
+.event-visual::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--charbon), transparent 60%); }
+.event-body { padding: 36px; }
+.event-tag { font-size: 9px; letter-spacing: 3px; color: var(--or); text-transform: uppercase; margin-bottom: 12px; display: block; }
+.event-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; color: #fff; margin-bottom: 12px; }
+.event-desc { font-size: 12px; color: var(--texte-doux); line-height: 1.9; margin-bottom: 20px; }
+.event-price { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--or); margin-bottom: 20px; }
+.event-link { font-size: 9px; letter-spacing: 3px; color: var(--or); text-decoration: none; text-transform: uppercase; border-bottom: 1px solid rgba(201,168,76,0.3); padding-bottom: 3px; transition: border-color 0.3s; }
+.event-link:hover { border-color: var(--or); }
+.priv-section { background: var(--noir); padding: 100px 80px; }
+.priv-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; max-width: 1200px; margin: 0 auto; }
+.priv-visual { height: 500px; background: linear-gradient(135deg, var(--fumee), var(--noir)); display: flex; align-items: center; justify-content: center; font-size: 80px; border: 1px solid rgba(201,168,76,0.1); position: relative; }
+.priv-features { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 40px 0; }
+.priv-feature { display: flex; gap: 16px; align-items: flex-start; }
+.priv-feature-icon { width: 36px; height: 36px; border: 1px solid rgba(201,168,76,0.3); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.priv-feature-title { font-size: 12px; color: var(--creme); font-weight: 500; margin-bottom: 4px; }
+.priv-feature-text { font-size: 11px; color: var(--texte-doux); line-height: 1.6; }
+@media(max-width:768px) {
+  .events-grid { grid-template-columns: 1fr; }
+  .priv-inner { grid-template-columns: 1fr; }
+  .priv-features { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<nav id="navbar">
+  <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="menu.html">Menu</a></li>
+    <li><a href="chef.html">Le Chef</a></li>
+    <li><a href="evenements.html" class="active">Événements</a></li>
+  </ul>
+  <a href="index.html" class="nav-logo"><div class="nav-logo-name">L'Orfèvre</div><div class="nav-logo-sub">Gastronomie française · Paris</div></a>
+  <ul class="nav-links" style="justify-content:flex-end;">
+    <li><a href="presse.html">Presse</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="reservation.html" class="nav-reserve">Réserver</a></li>
+  </ul>
+</nav>
+
+<section class="page-hero">
+  <div class="page-hero-content">
+    <div class="page-eyebrow">✦ Vivez L'Orfèvre autrement</div>
+    <h1 class="page-title">Nos <em>Événements</em></h1>
+    <div class="gold-line"></div>
+    <p class="page-subtitle">Dîners · Masterclasses · Privatisation</p>
+  </div>
+</section>
+
+<section class="section" style="background:var(--noir-doux);">
+  <div class="section-eyebrow">✦ Agenda</div>
+  <div class="section-title">Expériences <em>exclusives</em></div>
+  <div class="gold-line"></div>
+  <p class="section-intro">Des soirées pensées pour prolonger le plaisir de la table et créer des souvenirs impérissables.</p>
+  <div class="events-grid">
+    <div class="event-card reveal">
+      <div class="event-visual">🥂</div>
+      <div class="event-body">
+        <span class="event-tag">✦ Chaque vendredi soir</span>
+        <div class="event-title">Dîner Accord Mets & Vins</div>
+        <div class="event-desc">Notre sommelier sélectionne 5 vins d'exception pour accompagner un menu dégustation 5 services imaginé spécialement pour la soirée.</div>
+        <div class="event-price">195€ / personne</div>
+        <a href="reservation.html" class="event-link">Réserver →</a>
+      </div>
+    </div>
+    <div class="event-card reveal" style="transition-delay:0.1s;">
+      <div class="event-visual">👨‍🍳</div>
+      <div class="event-body">
+        <span class="event-tag">✦ Samedi matin · 10h–13h</span>
+        <div class="event-title">Masterclass avec le Chef</div>
+        <div class="event-desc">3h en cuisine avec Alexandre Moreau. Techniques de la gastronomie française, recettes exclusives, déjeuner sur place. Maximum 8 participants.</div>
+        <div class="event-price">280€ / personne</div>
+        <a href="reservation.html" class="event-link">S'inscrire →</a>
+      </div>
+    </div>
+    <div class="event-card reveal" style="transition-delay:0.2s;">
+      <div class="event-visual">🌹</div>
+      <div class="event-body">
+        <span class="event-tag">✦ Sur réservation</span>
+        <div class="event-title">Table des Amoureux</div>
+        <div class="event-desc">Table isolée, menu surprise, pétales de rose, champagne en arrivant. Pour les moments qui comptent vraiment. Disponible tous les soirs.</div>
+        <div class="event-price">À partir de 320€ / couple</div>
+        <a href="reservation.html" class="event-link">Découvrir →</a>
+      </div>
+    </div>
+    <div class="event-card reveal">
+      <div class="event-visual">🎂</div>
+      <div class="event-body">
+        <span class="event-tag">✦ Toute l'année</span>
+        <div class="event-title">Anniversaire Prestige</div>
+        <div class="event-desc">Gâteau personnalisé, décoration florale, photos souvenir, message du chef en salle. Faites de chaque anniversaire un événement d'exception.</div>
+        <div class="event-price">Sur devis</div>
+        <a href="contact.html" class="event-link">Nous contacter →</a>
+      </div>
+    </div>
+    <div class="event-card reveal" style="transition-delay:0.1s;">
+      <div class="event-visual">🍾</div>
+      <div class="event-body">
+        <span class="event-tag">✦ Décembre · Janvier</span>
+        <div class="event-title">Réveillons & Fêtes</div>
+        <div class="event-desc">Noël, Saint-Sylvestre, jour de l'An — des menus spéciaux élaborés pour les fêtes, dans une salle décorée avec soin pour l'occasion.</div>
+        <div class="event-price">À partir de 220€</div>
+        <a href="reservation.html" class="event-link">Réserver →</a>
+      </div>
+    </div>
+    <div class="event-card reveal" style="transition-delay:0.2s;">
+      <div class="event-visual">🎁</div>
+      <div class="event-body">
+        <span class="event-tag">✦ Disponible en ligne</span>
+        <div class="event-title">Bon Cadeau</div>
+        <div class="event-desc">Offrez une expérience inoubliable. Bon cadeau personnalisé pour un dîner, une masterclass ou un menu dégustation. Valable 1 an.</div>
+        <div class="event-price">À partir de 100€</div>
+        <a href="contact.html" class="event-link">Commander →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="priv-section">
+  <div class="priv-inner">
+    <div class="priv-visual">🏛️</div>
+    <div>
+      <div class="section-eyebrow">✦ Événements privés</div>
+      <div class="section-title">Privatisez <em>L'Orfèvre</em></div>
+      <div class="gold-line" style="margin:24px 0;"></div>
+      <p class="section-intro" style="max-width:100%;">Du dîner d'entreprise au mariage intime, nous mettons notre expertise au service de vos événements. Capacité jusqu'à 80 couverts.</p>
+      <div class="priv-features">
+        <div class="priv-feature reveal"><div class="priv-feature-icon">🍽️</div><div><div class="priv-feature-title">Menu sur-mesure</div><div class="priv-feature-text">Le chef crée un menu exclusif selon vos souhaits.</div></div></div>
+        <div class="priv-feature reveal"><div class="priv-feature-icon">🥂</div><div><div class="priv-feature-title">Sélection de vins</div><div class="priv-feature-text">Notre sommelier choisit les accords parfaits.</div></div></div>
+        <div class="priv-feature reveal"><div class="priv-feature-icon">💐</div><div><div class="priv-feature-title">Décoration florale</div><div class="priv-feature-text">Fleurs fraîches et mise en scène personnalisée.</div></div></div>
+        <div class="priv-feature reveal"><div class="priv-feature-icon">🎵</div><div><div class="priv-feature-title">Musique live</div><div class="priv-feature-text">Quatuor à cordes, piano bar ou DJ selon l'ambiance souhaitée.</div></div></div>
+      </div>
+      <a href="contact.html" class="btn-gold">Demander un devis</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="nav-logo-name" style="font-size:20px;letter-spacing:6px;">L'Orfèvre</div><div class="nav-logo-sub" style="margin-top:4px;">Gastronomie française · Paris</div><p>24 Rue du Faubourg Saint-Honoré<br>75008 Paris · +33 1 42 00 00 00</p></div>
+    <div class="footer-links"><h4>Pages</h4><ul><li><a href="index.html">Accueil</a></li><li><a href="menu.html">Menu & Vins</a></li><li><a href="chef.html">Le Chef</a></li><li><a href="evenements.html">Événements</a></li><li><a href="presse.html">Presse</a></li><li><a href="reservation.html">Réservation</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+    <div class="footer-links"><h4>Infos</h4><ul><li><a href="#">Mentions légales</a></li><li><a href="#">Confidentialité</a></li><li><a href="#">Bon cadeau</a></li><li><a href="#">Recrutement</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><p>© 2026 L'Orfèvre · Tous droits réservés</p><div class="footer-social"><a href="#">Instagram</a><a href="#">Facebook</a><a href="#">TripAdvisor</a></div></div>
+</footer>
+<div class="notif" id="notif"><div class="notif-title"></div><div class="notif-text"></div></div>
+<script src="main.js"></script>
+</body>
+</html>
