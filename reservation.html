@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Réservation — L'Orfèvre</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.reservation-wrap { max-width: 760px; margin: 0 auto; padding: 0 80px 100px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-bottom: 2px; }
+.form-field { position: relative; }
+.form-field label { display: block; font-size: 9px; letter-spacing: 3px; color: var(--or); text-transform: uppercase; margin-bottom: 10px; }
+.form-field input, .form-field select, .form-field textarea { width: 100%; background: var(--charbon); border: 1px solid rgba(201,168,76,0.12); color: var(--creme); font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 300; padding: 16px 20px; outline: none; transition: border-color 0.3s; -webkit-appearance: none; }
+.form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: rgba(201,168,76,0.5); }
+.form-field select option { background: var(--noir); }
+.form-field input::placeholder, .form-field textarea::placeholder { color: var(--texte-doux); }
+.form-full { grid-column: 1 / -1; }
+.form-submit { width: 100%; background: var(--or); color: var(--noir); border: none; padding: 22px; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; cursor: none; transition: all 0.3s; margin-top: 2px; }
+.form-submit:hover { background: var(--or-clair); }
+.form-note { font-size: 10px; color: var(--texte-doux); margin-top: 16px; text-align: center; letter-spacing: 1px; line-height: 1.8; }
+.infos-strip { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; margin: 0 0 64px; }
+.info-strip-item { background: var(--charbon); border: 1px solid rgba(255,255,255,0.04); padding: 28px; text-align: center; }
+.info-strip-icon { font-size: 24px; margin-bottom: 10px; }
+.info-strip-title { font-size: 10px; letter-spacing: 2px; color: var(--or); text-transform: uppercase; margin-bottom: 6px; }
+.info-strip-text { font-size: 12px; color: var(--texte-doux); line-height: 1.7; }
+@media(max-width:768px) {
+  .reservation-wrap { padding: 0 24px 80px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .infos-strip { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<nav id="navbar">
+  <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="menu.html">Menu</a></li>
+    <li><a href="chef.html">Le Chef</a></li>
+    <li><a href="evenements.html">Événements</a></li>
+  </ul>
+  <a href="index.html" class="nav-logo"><div class="nav-logo-name">L'Orfèvre</div><div class="nav-logo-sub">Gastronomie française · Paris</div></a>
+  <ul class="nav-links" style="justify-content:flex-end;">
+    <li><a href="presse.html">Presse</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="reservation.html" class="nav-reserve active" style="background:var(--or);color:var(--noir);">Réserver</a></li>
+  </ul>
+</nav>
+
+<section class="page-hero">
+  <div class="page-hero-content">
+    <div class="page-eyebrow">✦ Votre soirée commence ici</div>
+    <h1 class="page-title">Réserver <em>une table</em></h1>
+    <div class="gold-line"></div>
+    <p class="page-subtitle">Déjeuner · Dîner · Événements privés</p>
+  </div>
+</section>
+
+<section style="background:var(--noir-doux);padding:80px 80px 0;">
+  <div class="infos-strip">
+    <div class="info-strip-item reveal">
+      <div class="info-strip-icon">🕐</div>
+      <div class="info-strip-title">Déjeuner</div>
+      <div class="info-strip-text">Mardi – Samedi<br>12h00 à 14h00</div>
+    </div>
+    <div class="info-strip-item reveal" style="transition-delay:0.1s;">
+      <div class="info-strip-icon">🌙</div>
+      <div class="info-strip-title">Dîner</div>
+      <div class="info-strip-text">Mardi – Samedi<br>19h30 à 22h30</div>
+    </div>
+    <div class="info-strip-item reveal" style="transition-delay:0.2s;">
+      <div class="info-strip-icon">👥</div>
+      <div class="info-strip-title">Groupes</div>
+      <div class="info-strip-text">Plus de 8 personnes ?<br>Contactez-nous directement</div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--noir-doux);padding:40px 0 100px;">
+  <div class="reservation-wrap">
+    <div style="text-align:center; padding: 40px 0 20px;">
+      <button onclick="document.getElementById('popup-reservation').style.display='flex'" class="btn-gold">
+        Réserver une table
+      </button>
+      <p style="font-size:10px;color:var(--texte-doux);margin-top:24px;letter-spacing:1px;line-height:1.8;">
+        ✦ Réservation instantanée · Confirmation par email · Annulation gratuite 48h avant<br>
+        Pour les groupes de plus de 8 : <a href="tel:+33142000000" style="color:var(--or);text-decoration:none;">+33 1 42 00 00 00</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- POPUP RÉSERVATION -->
+<div id="popup-reservation" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(12,11,9,0.92); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+  <div style="background:#1E1B16; border:1px solid rgba(201,168,76,0.25); width:90%; max-width:600px; height:88vh; position:relative; box-shadow:0 40px 80px rgba(0,0,0,0.6);">
+    <div style="padding:24px 32px; border-bottom:1px solid rgba(201,168,76,0.12); display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div style="font-size:9px;letter-spacing:5px;color:#C9A84C;text-transform:uppercase;">✦ L'Orfèvre</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#fff;font-weight:300;margin-top:2px;">Réserver une table</div>
+      </div>
+      <button onclick="document.getElementById('popup-reservation').style.display='none'" style="background:none;border:1px solid rgba(201,168,76,0.2);color:#C9A84C;width:36px;height:36px;cursor:pointer;font-size:16px;">✕</button>
+    </div>
+    <iframe src="https://restaurant-reservation-9r5p.vercel.app/" style="width:100%; height:calc(100% - 73px); border:none;"></iframe>
+  </div>
+</div>
+
+<div style="background:var(--charbon);padding:60px 80px;text-align:center;border-top:1px solid rgba(201,168,76,0.1);">
+  <div class="section-eyebrow">✦ Événement privé ?</div>
+  <div class="section-title" style="margin-bottom:16px;text-align:center;">Privatisez <em>L'Orfèvre</em></div>
+  <p style="font-size:13px;color:var(--texte-doux);margin:0 auto 32px;max-width:480px;line-height:2;">Pour les séminaires, mariages, anniversaires ou tout événement d'exception, notre équipe vous accompagne de A à Z.</p>
+  <a href="evenements.html" class="btn-ghost">Découvrir nos formules</a>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="nav-logo-name" style="font-size:20px;letter-spacing:6px;">L'Orfèvre</div><div class="nav-logo-sub" style="margin-top:4px;">Gastronomie française · Paris</div><p>24 Rue du Faubourg Saint-Honoré<br>75008 Paris · +33 1 42 00 00 00</p></div>
+    <div class="footer-links"><h4>Pages</h4><ul><li><a href="index.html">Accueil</a></li><li><a href="menu.html">Menu & Vins</a></li><li><a href="chef.html">Le Chef</a></li><li><a href="evenements.html">Événements</a></li><li><a href="presse.html">Presse</a></li><li><a href="reservation.html">Réservation</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+    <div class="footer-links"><h4>Infos</h4><ul><li><a href="#">Mentions légales</a></li><li><a href="#">Confidentialité</a></li><li><a href="#">Bon cadeau</a></li><li><a href="#">Recrutement</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><p>© 2026 L'Orfèvre · Tous droits réservés</p><div class="footer-social"><a href="#">Instagram</a><a href="#">Facebook</a><a href="#">TripAdvisor</a></div></div>
+</footer>
+<div class="notif" id="notif"><div class="notif-title"></div><div class="notif-text"></div></div>
+<script src="main.js"></script>
+<script>
+// Fermer popup en cliquant dehors
+document.getElementById('popup-reservation').addEventListener('click', function(e) {
+  if (e.target === this) this.style.display = 'none';
+});
+</script>
+</body>
+</html>
