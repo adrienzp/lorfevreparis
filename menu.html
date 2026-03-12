@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menu — L'Orfèvre</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* TABS */
+.menu-tabs { display: flex; gap: 0; margin: 56px 0 48px; border-bottom: 1px solid rgba(201,168,76,0.15); flex-wrap: wrap; }
+.menu-tab { background: none; border: none; color: var(--texte-doux); font-family: 'Montserrat', sans-serif; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; padding: 16px 32px; cursor: pointer; transition: all 0.3s; position: relative; }
+.menu-tab.active, .menu-tab:hover { color: var(--or); }
+.menu-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 1px; background: var(--or); }
+
+/* FILTRES ALLERGENES */
+.allergenes-filtres {
+  margin-bottom: 40px;
+}
+.allergenes-filtres-title {
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: var(--or);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.allergenes-filtres-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(201,168,76,0.15);
+}
+.filtres-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filtre-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(201,168,76,0.04);
+  border: 1px solid rgba(201,168,76,0.15);
+  color: var(--texte-doux);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.filtre-btn:hover {
+  border-color: rgba(201,168,76,0.4);
+  color: var(--texte);
+}
+.filtre-btn.active {
+  background: rgba(201,168,76,0.12);
+  border-color: var(--or);
+  color: var(--or);
+}
+.filtre-btn .filtre-icon { font-size: 16px; }
+.filtre-btn .filtre-check {
+  width: 14px; height: 14px;
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.filtre-btn.active .filtre-check {
+  background: var(--or);
+  border-color: var(--or);
+  color: var(--noir);
+}
+
+.filtre-reset {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--texte-doux);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.25s;
+  margin-left: 8px;
+}
+.filtre-reset:hover { color: var(--texte); border-color: rgba(255,255,255,0.2); }
+
+/* Bandeau résultat filtre */
+.filtre-result {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: rgba(201,168,76,0.06);
+  border: 1px solid rgba(201,168,76,0.2);
+  margin-bottom: 24px;
+  font-size: 11px;
+  color: var(--texte-doux);
+  letter-spacing: 1px;
+}
+.filtre-result.visible { display: flex; }
+.filtre-result strong { color: var(--or); }
+
+/* MENU ITEMS */
+.menu-content { display: none; }
+.menu-content.active { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+
+.menu-item {
+  padding: 32px;
+  border: 1px solid rgba(255,255,255,0.04);
+  transition: all 0.35s;
+  position: relative;
+}
+.menu-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, var(--or), transparent);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+.menu-item:hover { background: rgba(201,168,76,0.03); }
+.menu-item:hover::after { transform: scaleX(1); }
+
+/* Plat filtré (pas compatible) */
+.menu-item.filtered-out {
+  opacity: 0.15;
+  pointer-events: none;
+  transform: scale(0.98);
+}
+/* Plat compatible avec le filtre */
+.menu-item.filtered-in {
+  border-color: rgba(201,168,76,0.2);
+}
+
+.menu-item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 16px; }
+.menu-item-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: #fff; letter-spacing: 0.5px; }
+.menu-item-price { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--or); font-weight: 300; white-space: nowrap; }
+.menu-item-desc { font-size: 11px; color: var(--texte-doux); line-height: 1.9; margin-bottom: 14px; }
+.menu-item-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.tag { font-size: 9px; letter-spacing: 2px; color: var(--or); border: 1px solid rgba(201,168,76,0.25); padding: 3px 10px; text-transform: uppercase; }
+
+/* Badges allergènes sur chaque plat */
+.menu-item-allergenes {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.allergene-badge {
+  font-size: 11px;
+  padding: 3px 6px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--texte-doux);
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+.allergene-badge .ab-icon { font-size: 13px; }
+
+/* VINS */
+.wine-intro { font-size: 13px; color: var(--texte-doux); line-height: 2; margin-bottom: 48px; font-weight: 300; }
+.wine-card { padding: 32px; border: 1px solid rgba(255,255,255,0.04); transition: all 0.3s; }
+.wine-card:hover { background: rgba(201,168,76,0.03); border-color: rgba(201,168,76,0.15); }
+.wine-region { font-size: 9px; letter-spacing: 3px; color: var(--or); text-transform: uppercase; margin-bottom: 8px; }
+.wine-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #fff; margin-bottom: 4px; }
+.wine-year { font-size: 11px; color: var(--texte-doux); margin-bottom: 10px; }
+.wine-desc { font-size: 11px; color: var(--texte-doux); line-height: 1.8; margin-bottom: 14px; }
+.wine-price { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--or); }
+
+/* SECTION ALLERGENES BAS DE PAGE */
+.allergenes-note { background: var(--charbon); border: 1px solid rgba(201,168,76,0.12); padding: 32px; margin-top: 48px; }
+.allergenes-legende {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+.allergene-chip { display: flex; align-items: center; gap: 8px; background: rgba(201,168,76,0.07); border: 1px solid rgba(201,168,76,0.2); padding: 8px 14px; }
+.allergene-chip span:first-child { font-size: 18px; }
+.allergene-chip span:last-child { font-size: 10px; letter-spacing: 1px; color: var(--texte-doux); text-transform: uppercase; }
+
+@media(max-width:768px) {
+  .menu-content.active { grid-template-columns: 1fr; }
+  .menu-tab { padding: 12px 16px; font-size: 9px; }
+  .filtres-row { gap: 6px; }
+  .filtre-btn { padding: 7px 10px; font-size: 8px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<nav id="navbar">
+  <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="menu.html" class="active">Menu</a></li>
+    <li><a href="chef.html">Le Chef</a></li>
+    <li><a href="evenements.html">Événements</a></li>
+  </ul>
+  <a href="index.html" class="nav-logo"><div class="nav-logo-name">L'Orfèvre</div><div class="nav-logo-sub">Gastronomie française · Paris</div></a>
+  <ul class="nav-links" style="justify-content:flex-end;">
+    <li><a href="presse.html">Presse</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="reservation.html" class="nav-reserve">Réserver</a></li>
+  </ul>
+</nav>
+
+<section class="page-hero">
+  <div class="page-hero-content">
+    <div class="page-eyebrow">✦ Saison 2026</div>
+    <h1 class="page-title">La <em>Carte</em></h1>
+    <div class="gold-line"></div>
+    <p class="page-subtitle">Entrées · Plats · Desserts · Vins</p>
+  </div>
+</section>
+
+<section class="section" style="background:var(--noir-doux);">
+  <p style="font-size:13px;color:var(--texte-doux);line-height:2;max-width:600px;font-weight:300;">Une cuisine de saison, ancrée dans le terroir français, sublimée par la précision du geste. Chaque produit est sélectionné auprès de producteurs locaux engagés.</p>
+
+  <!-- FILTRES ALLERGÈNES -->
+  <div class="allergenes-filtres" style="margin-top:40px;">
+    <div class="allergenes-filtres-title">✦ Filtrer par allergène — cliquez pour afficher uniquement les plats compatibles</div>
+    <div class="filtres-row">
+      <button class="filtre-btn" data-filtre="gluten" onclick="toggleFiltre(this)">
+        <span class="filtre-icon">🌾</span>
+        <span>Sans Gluten</span>
+        <span class="filtre-check">✓</span>
+      </button>
+      <button class="filtre-btn" data-filtre="poisson" onclick="toggleFiltre(this)">
+        <span class="filtre-icon">🐟</span>
+        <span>Sans Poisson</span>
+        <span class="filtre-check">✓</span>
+      </button>
+      <button class="filtre-btn" data-filtre="crustaces" onclick="toggleFiltre(this)">
+        <span class="filtre-icon">🦐</span>
+        <span>Sans Crustacés</span>
+        <span class="filtre-check">✓</span>
+      </button>
+      <button class="filtre-btn" data-filtre="mollusques" onclick="toggleFiltre(this)">
+        <span class="filtre-icon">🦪</span>
+        <span>Sans Mollusques</span>
+        <span class="filtre-check">✓</span>
+      </button>
+      <button class="filtre-btn" data-filtre="soja" onclick="toggleFiltre(this)">
+        <span class="filtre-icon">🫘</span>
+        <span>Sans Soja</span>
+        <span class="filtre-check">✓</span>
+      </button>
+      <button class="filtre-btn" data-filtre="celeri" onclick="toggleFiltre(this)">
+        <span class="filtre-icon">🌿</span>
+        <span>Sans Céleri</span>
+        <span class="filtre-check">✓</span>
+      </button>
+      <button class="filtre-btn" data-filtre="moutarde" onclick="toggleFiltre(this)">
+        <span class="filtre-icon">🟡</span>
+        <span>Sans Moutarde</span>
+        <span class="filtre-check">✓</span>
+      </button>
+      <button class="filtre-btn" data-filtre="sesame" onclick="toggleFiltre(this)">
+        <span class="filtre-icon">🌰</span>
+        <span>Sans Sésame</span>
+        <span class="filtre-check">✓</span>
+      </button>
+      <button class="filtre-btn" data-filtre="lupin" onclick="toggleFiltre(this)">
+        <span class="filtre-icon">🌼</span>
+        <span>Sans Lupin</span>
+        <span class="filtre-check">✓</span>
+      </button>
+      <button class="filtre-btn" data-filtre="aneth" onclick="toggleFiltre(this)">
+        <span class="filtre-icon">🌱</span>
+        <span>Sans Aneth</span>
+        <span class="filtre-check">✓</span>
+      </button>
+      <button class="filtre-reset" onclick="resetFiltres()">✕ Tout afficher</button>
+    </div>
+  </div>
+
+  <!-- BANDEAU RÉSULTAT -->
+  <div class="filtre-result" id="filtre-result">
+    <span>🔍</span>
+    <span id="filtre-result-text"></span>
+  </div>
+
+  <!-- TABS -->
+  <div class="menu-tabs">
+    <button class="menu-tab active" onclick="showTab('entrees',this)">Entrées</button>
+    <button class="menu-tab" onclick="showTab('plats',this)">Plats</button>
+    <button class="menu-tab" onclick="showTab('desserts',this)">Desserts</button>
+    <button class="menu-tab" onclick="showTab('vins',this)">Carte des Vins</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- ENTRÉES -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="menu-content active" id="entrees">
+
+    <!-- Foie Gras : gluten (brioche), soja possible -->
+    <div class="menu-item reveal" data-allergenes="gluten">
+      <div class="menu-item-header"><span class="menu-item-name">Foie Gras de Canard</span><span class="menu-item-price">38€</span></div>
+      <div class="menu-item-desc">Terrine maison, chutney de figues et vieux porto, brioche toastée au beurre salé de Guérande.</div>
+      <div class="menu-item-tags"><span class="tag">Signature</span><span class="tag">Maison</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🌾</span>Gluten</div>
+      </div>
+    </div>
+
+    <!-- Saint-Jacques : mollusques -->
+    <div class="menu-item reveal" data-allergenes="mollusques">
+      <div class="menu-item-header"><span class="menu-item-name">Noix de Saint-Jacques</span><span class="menu-item-price">42€</span></div>
+      <div class="menu-item-desc">Snackées à la plancha, velouté de butternut, huile de truffe noire du Périgord, tuile parmesan.</div>
+      <div class="menu-item-tags"><span class="tag">Saison</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🦪</span>Mollusques</div>
+      </div>
+    </div>
+
+    <!-- Tartare de Veau : moutarde (cornichons/câpres), gluten (chips sarrasin) -->
+    <div class="menu-item reveal" data-allergenes="gluten moutarde">
+      <div class="menu-item-header"><span class="menu-item-name">Tartare de Veau</span><span class="menu-item-price">34€</span></div>
+      <div class="menu-item-desc">Veau de lait haché au couteau, câpres, cornichons, jaune d'œuf confit, chips de sarrasin.</div>
+      <div class="menu-item-tags"><span class="tag">Tradition</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🌾</span>Gluten</div>
+        <div class="allergene-badge"><span class="ab-icon">🟡</span>Moutarde</div>
+      </div>
+    </div>
+
+    <!-- Velouté Champignons : céleri (bouillon) -->
+    <div class="menu-item reveal" data-allergenes="celeri gluten">
+      <div class="menu-item-header"><span class="menu-item-name">Velouté de Champignons</span><span class="menu-item-price">26€</span></div>
+      <div class="menu-item-desc">Cèpes, girolles et chanterelles des sous-bois, crème fouettée à la truffe, croûtons au romarin.</div>
+      <div class="menu-item-tags"><span class="tag">Végétarien</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🌾</span>Gluten</div>
+        <div class="allergene-badge"><span class="ab-icon">🌿</span>Céleri</div>
+      </div>
+    </div>
+
+    <!-- Huîtres : mollusques, gluten (pain seigle) -->
+    <div class="menu-item reveal" data-allergenes="mollusques gluten">
+      <div class="menu-item-header"><span class="menu-item-name">Huîtres de Marennes</span><span class="menu-item-price">28€</span></div>
+      <div class="menu-item-desc">6 huîtres n°2, mignonette de poivre, citron caviar, pain de seigle grillé au beurre d'algues.</div>
+      <div class="menu-item-tags"><span class="tag">Pêche fraîche</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🦪</span>Mollusques</div>
+        <div class="allergene-badge"><span class="ab-icon">🌾</span>Gluten</div>
+      </div>
+    </div>
+
+    <!-- Carpaccio Langoustines : crustacés, aneth -->
+    <div class="menu-item reveal" data-allergenes="crustaces aneth">
+      <div class="menu-item-header"><span class="menu-item-name">Carpaccio de Langoustines</span><span class="menu-item-price">46€</span></div>
+      <div class="menu-item-desc">Langoustines bretonnes, vinaigrette d'agrumes, caviar Osciètre, herbes fraîches du jardin.</div>
+      <div class="menu-item-tags"><span class="tag">Prestige</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🦐</span>Crustacés</div>
+        <div class="allergene-badge"><span class="ab-icon">🌱</span>Aneth</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PLATS -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="menu-content" id="plats">
+
+    <!-- Bœuf Rossini : gluten (sauce Périgueux), céleri -->
+    <div class="menu-item reveal" data-allergenes="gluten celeri">
+      <div class="menu-item-header"><span class="menu-item-name">Filet de Bœuf Rossini</span><span class="menu-item-price">68€</span></div>
+      <div class="menu-item-desc">Filet de bœuf charolais, escalope de foie gras poêlée, sauce Périgueux à la truffe noire, pomme dauphine.</div>
+      <div class="menu-item-tags"><span class="tag">Signature</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🌾</span>Gluten</div>
+        <div class="allergene-badge"><span class="ab-icon">🌿</span>Céleri</div>
+      </div>
+    </div>
+
+    <!-- Homard : crustacés -->
+    <div class="menu-item reveal" data-allergenes="crustaces">
+      <div class="menu-item-header"><span class="menu-item-name">Homard Bleu Breton</span><span class="menu-item-price">72€</span></div>
+      <div class="menu-item-desc">Rôti entier, bisque corsée au cognac, légumes croquants du moment, beurre blanc aux agrumes.</div>
+      <div class="menu-item-tags"><span class="tag">Pêche du jour</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🦐</span>Crustacés</div>
+      </div>
+    </div>
+
+    <!-- Pigeon : céleri (jus de cuisson) -->
+    <div class="menu-item reveal" data-allergenes="celeri">
+      <div class="menu-item-header"><span class="menu-item-name">Pigeon de Bresse Rôti</span><span class="menu-item-price">58€</span></div>
+      <div class="menu-item-desc">Rôti en cocotte, jus corsé aux baies de genièvre, gratin de pommes de terre à la truffe.</div>
+      <div class="menu-item-tags"><span class="tag">Terroir</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🌿</span>Céleri</div>
+      </div>
+    </div>
+
+    <!-- Sole : poisson, gluten (farine meunière) -->
+    <div class="menu-item reveal" data-allergenes="poisson gluten">
+      <div class="menu-item-header"><span class="menu-item-name">Sole de Ligne Meunière</span><span class="menu-item-price">56€</span></div>
+      <div class="menu-item-desc">Sole entière levée en salle, beurre noisette aux câpres et citron, pommes vapeur persillées.</div>
+      <div class="menu-item-tags"><span class="tag">Classique</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🐟</span>Poisson</div>
+        <div class="allergene-badge"><span class="ab-icon">🌾</span>Gluten</div>
+      </div>
+    </div>
+
+    <!-- Ris de Veau : gluten (panure croustillante), céleri -->
+    <div class="menu-item reveal" data-allergenes="gluten celeri">
+      <div class="menu-item-header"><span class="menu-item-name">Ris de Veau Doré</span><span class="menu-item-price">62€</span></div>
+      <div class="menu-item-desc">Ris de veau croustillant, morels à la crème, asperges vertes, jus de veau réduit au Madère.</div>
+      <div class="menu-item-tags"><span class="tag">Saison</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🌾</span>Gluten</div>
+        <div class="allergene-badge"><span class="ab-icon">🌿</span>Céleri</div>
+      </div>
+    </div>
+
+    <!-- Risotto Truffe : pas d'allergènes majeurs (végétarien, sans gluten) -->
+    <div class="menu-item reveal" data-allergenes="">
+      <div class="menu-item-header"><span class="menu-item-name">Risotto Truffe Noire</span><span class="menu-item-price">48€</span></div>
+      <div class="menu-item-desc">Carnaroli mantecato, truffe noire du Périgord râpée à table, parmesan 36 mois, beurre clarifié.</div>
+      <div class="menu-item-tags"><span class="tag">Végétarien</span><span class="tag">Prestige</span></div>
+      <div class="menu-item-allergenes" style="border-top:1px solid rgba(201,168,76,0.1);">
+        <div class="allergene-badge" style="background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.2);color:var(--or);">
+          <span class="ab-icon">✓</span>Aucun allergène majeur
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- DESSERTS -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="menu-content" id="desserts">
+
+    <!-- Soufflé Grand Marnier : gluten -->
+    <div class="menu-item reveal" data-allergenes="gluten">
+      <div class="menu-item-header"><span class="menu-item-name">Soufflé Grand Marnier</span><span class="menu-item-price">22€</span></div>
+      <div class="menu-item-desc">Soufflé chaud à l'orange et Grand Marnier, crème anglaise vanille Bourbon, zestes confits.</div>
+      <div class="menu-item-tags"><span class="tag">Signature</span><span class="tag">À commander</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🌾</span>Gluten</div>
+      </div>
+    </div>
+
+    <!-- Tarte Tatin : gluten (feuilletage) -->
+    <div class="menu-item reveal" data-allergenes="gluten">
+      <div class="menu-item-header"><span class="menu-item-name">Tarte Tatin Revisitée</span><span class="menu-item-price">18€</span></div>
+      <div class="menu-item-desc">Pommes caramélisées à la fleur de sel, pâte feuilletée pur beurre, glace vanille de Madagascar.</div>
+      <div class="menu-item-tags"><span class="tag">Tradition</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🌾</span>Gluten</div>
+      </div>
+    </div>
+
+    <!-- Mille-feuille : gluten -->
+    <div class="menu-item reveal" data-allergenes="gluten">
+      <div class="menu-item-header"><span class="menu-item-name">Mille-Feuille Vanille</span><span class="menu-item-price">20€</span></div>
+      <div class="menu-item-desc">Feuilletage inversé caramélisé, crème diplomate vanille de Tahiti, coulis de framboise.</div>
+      <div class="menu-item-tags"><span class="tag">Maison</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🌾</span>Gluten</div>
+      </div>
+    </div>
+
+    <!-- Baba au Rhum : gluten -->
+    <div class="menu-item reveal" data-allergenes="gluten">
+      <div class="menu-item-header"><span class="menu-item-name">Baba au Rhum</span><span class="menu-item-price">19€</span></div>
+      <div class="menu-item-desc">Baba moelleux imbibé au rhum vieux, chantilly légère, fruits exotiques frais, caramel beurre salé.</div>
+      <div class="menu-item-tags"><span class="tag">Classique</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🌾</span>Gluten</div>
+      </div>
+    </div>
+
+    <!-- Fromages : gluten (pain aux noix) -->
+    <div class="menu-item reveal" data-allergenes="gluten">
+      <div class="menu-item-header"><span class="menu-item-name">Plateau de Fromages</span><span class="menu-item-price">24€</span></div>
+      <div class="menu-item-desc">Sélection affinée : Comté 36 mois, Époisses, Saint-Félicien, Roquefort Carles, pain aux noix.</div>
+      <div class="menu-item-tags"><span class="tag">Affiné</span><span class="tag">Terroir</span></div>
+      <div class="menu-item-allergenes">
+        <div class="allergene-badge"><span class="ab-icon">🌾</span>Gluten</div>
+      </div>
+    </div>
+
+    <!-- Île Flottante Truffe : aucun allergène majeur -->
+    <div class="menu-item reveal" data-allergenes="">
+      <div class="menu-item-header"><span class="menu-item-name">Île Flottante Truffe</span><span class="menu-item-price">21€</span></div>
+      <div class="menu-item-desc">Blanc en neige légèrement caramélisé, crème anglaise à la truffe blanche, amandes effilées.</div>
+      <div class="menu-item-tags"><span class="tag">Prestige</span></div>
+      <div class="menu-item-allergenes" style="border-top:1px solid rgba(201,168,76,0.1);">
+        <div class="allergene-badge" style="background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.2);color:var(--or);">
+          <span class="ab-icon">✓</span>Aucun allergène majeur
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- VINS -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="menu-content" id="vins">
+    <div style="grid-column:1/-1;">
+      <p class="wine-intro">Notre cave compte plus de 400 références soigneusement sélectionnées par notre sommelier. Découvrez une sélection de nos coups de cœur, disponibles au verre ou à la bouteille.</p>
+    </div>
+    <div style="grid-column:1/-1; font-family:'Cormorant Garamond',serif; font-size:28px; color:var(--or-pale); padding-bottom:12px; border-bottom:1px solid rgba(201,168,76,0.15); margin-bottom:2px;">Vins Blancs</div>
+    <div class="wine-card reveal">
+      <div class="wine-region">Bourgogne · Blanc</div>
+      <div class="wine-name">Meursault Premier Cru</div>
+      <div class="wine-year">Domaine Leflaive · 2021</div>
+      <div class="wine-desc">Minéral et beurré, notes de noisette et de miel, finale longue et persistante.</div>
+      <div class="wine-price">95€ / bouteille · 22€ / verre</div>
+    </div>
+    <div class="wine-card reveal">
+      <div class="wine-region">Loire · Blanc</div>
+      <div class="wine-name">Sancerre Les Monts Damnés</div>
+      <div class="wine-year">Henri Bourgeois · 2022</div>
+      <div class="wine-desc">Sauvignon pur, vif et minéral, notes de pamplemousse et de silex.</div>
+      <div class="wine-price">65€ / bouteille · 16€ / verre</div>
+    </div>
+    <div style="grid-column:1/-1; font-family:'Cormorant Garamond',serif; font-size:28px; color:var(--or-pale); padding-bottom:12px; border-bottom:1px solid rgba(201,168,76,0.15); margin-top:24px; margin-bottom:2px;">Vins Rouges</div>
+    <div class="wine-card reveal">
+      <div class="wine-region">Bordeaux · Rouge</div>
+      <div class="wine-name">Saint-Émilion Grand Cru</div>
+      <div class="wine-year">Château Figeac · 2019</div>
+      <div class="wine-desc">Puissant et élégant, tanins soyeux, notes de cassis et épices douces.</div>
+      <div class="wine-price">120€ / bouteille · 28€ / verre</div>
+    </div>
+    <div class="wine-card reveal">
+      <div class="wine-region">Rhône · Rouge</div>
+      <div class="wine-name">Châteauneuf-du-Pape</div>
+      <div class="wine-year">Château Rayas · 2020</div>
+      <div class="wine-desc">Grenache pur, garrigue, fruits mûrs et épices. Référence de l'appellation.</div>
+      <div class="wine-price">145€ / bouteille · 32€ / verre</div>
+    </div>
+    <div style="grid-column:1/-1; font-family:'Cormorant Garamond',serif; font-size:28px; color:var(--or-pale); padding-bottom:12px; border-bottom:1px solid rgba(201,168,76,0.15); margin-top:24px; margin-bottom:2px;">Champagnes</div>
+    <div class="wine-card reveal">
+      <div class="wine-region">Champagne · Brut</div>
+      <div class="wine-name">Blanc de Blancs Grand Cru</div>
+      <div class="wine-year">Krug · NV</div>
+      <div class="wine-desc">Effervescence fine, fraîcheur d'agrumes, notes de brioche et de nougat.</div>
+      <div class="wine-price">180€ / bouteille · 42€ / verre</div>
+    </div>
+    <div class="wine-card reveal">
+      <div class="wine-region">Champagne · Rosé</div>
+      <div class="wine-name">Rosé Millésimé</div>
+      <div class="wine-year">Billecart-Salmon · 2018</div>
+      <div class="wine-desc">Fraise des bois, pêche blanche, bulles délicates. Le champagne de la romance.</div>
+      <div class="wine-price">145€ / bouteille · 35€ / verre</div>
+    </div>
+  </div>
+
+  <!-- LÉGENDE ALLERGÈNES -->
+  <div class="allergenes-note">
+    <div style="font-size:9px;letter-spacing:3px;color:var(--or);text-transform:uppercase;margin-bottom:16px;">✦ Légende des allergènes</div>
+    <div class="allergenes-legende">
+      <div class="allergene-chip"><span>🌾</span><span>Gluten</span></div>
+      <div class="allergene-chip"><span>🐟</span><span>Poisson</span></div>
+      <div class="allergene-chip"><span>🦐</span><span>Crustacés</span></div>
+      <div class="allergene-chip"><span>🦪</span><span>Mollusques</span></div>
+      <div class="allergene-chip"><span>🫘</span><span>Soja</span></div>
+      <div class="allergene-chip"><span>🌿</span><span>Céleri</span></div>
+      <div class="allergene-chip"><span>🟡</span><span>Moutarde</span></div>
+      <div class="allergene-chip"><span>🌰</span><span>Sésame</span></div>
+      <div class="allergene-chip"><span>🌼</span><span>Lupin</span></div>
+      <div class="allergene-chip"><span>🌱</span><span>Aneth</span></div>
+    </div>
+    <p style="font-size:10px;color:var(--texte-doux);margin-top:16px;line-height:1.8;">Informez votre serveur de toute allergie ou intolérance. Notre cuisine s'adapte à vos besoins avec le même soin. Les informations allergènes sont données à titre indicatif — risque de traces possible.</p>
+  </div>
+
+</section>
+
+<div style="background:var(--charbon);padding:60px 80px;text-align:center;">
+  <div class="section-eyebrow">✦ Prêt à vivre l'expérience ?</div>
+  <div class="section-title" style="margin-bottom:32px;">Réservez <em>votre table</em></div>
+  <a href="reservation.html" class="btn-gold">Réserver maintenant</a>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="nav-logo-name" style="font-size:20px;letter-spacing:6px;">L'Orfèvre</div>
+      <div class="nav-logo-sub" style="margin-top:4px;">Gastronomie française · Paris</div>
+      <p>24 Rue du Faubourg Saint-Honoré<br>75008 Paris · +33 1 42 00 00 00</p>
+    </div>
+    <div class="footer-links"><h4>Pages</h4><ul><li><a href="index.html">Accueil</a></li><li><a href="menu.html">Menu & Vins</a></li><li><a href="chef.html">Le Chef</a></li><li><a href="evenements.html">Événements</a></li><li><a href="presse.html">Presse</a></li><li><a href="reservation.html">Réservation</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+    <div class="footer-links"><h4>Infos</h4><ul><li><a href="#">Mentions légales</a></li><li><a href="#">Confidentialité</a></li><li><a href="#">Bon cadeau</a></li><li><a href="#">Recrutement</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 L'Orfèvre · Tous droits réservés</p>
+    <div class="footer-social"><a href="#">Instagram</a><a href="#">Facebook</a><a href="#">TripAdvisor</a></div>
+  </div>
+</footer>
+
+<div class="notif" id="notif"><div class="notif-title"></div><div class="notif-text"></div></div>
+<script src="main.js"></script>
+<script>
+// ── TABS ──
+function showTab(id, btn) {
+  document.querySelectorAll('.menu-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  // Réappliquer les filtres actifs sur le nouvel onglet
+  applyFiltres();
+}
+
+// ── FILTRES ALLERGÈNES ──
+let filtresActifs = new Set();
+
+function toggleFiltre(btn) {
+  const filtre = btn.dataset.filtre;
+  if (filtresActifs.has(filtre)) {
+    filtresActifs.delete(filtre);
+    btn.classList.remove('active');
+  } else {
+    filtresActifs.add(filtre);
+    btn.classList.add('active');
+  }
+  applyFiltres();
+}
+
+function resetFiltres() {
+  filtresActifs.clear();
+  document.querySelectorAll('.filtre-btn').forEach(b => b.classList.remove('active'));
+  applyFiltres();
+}
+
+function applyFiltres() {
+  const result = document.getElementById('filtre-result');
+  const resultText = document.getElementById('filtre-result-text');
+
+  // Tous les plats (entrées + plats + desserts, pas les vins)
+  const allItems = document.querySelectorAll('#entrees .menu-item, #plats .menu-item, #desserts .menu-item');
+
+  if (filtresActifs.size === 0) {
+    // Aucun filtre → tout afficher
+    allItems.forEach(item => {
+      item.classList.remove('filtered-out', 'filtered-in');
+    });
+    result.classList.remove('visible');
+    return;
+  }
+
+  let compatiblesVisibles = 0;
+  let totalVisibles = 0;
+
+  // Onglet actif
+  const ongletActif = document.querySelector('.menu-content.active');
+  const itemsOnglet = ongletActif ? ongletActif.querySelectorAll('.menu-item') : [];
+
+  allItems.forEach(item => {
+    const allergenes = (item.dataset.allergenes || '').split(' ').filter(a => a !== '');
+    // Compatible = ne contient AUCUN des allergènes filtrés
+    const compatible = [...filtresActifs].every(f => !allergenes.includes(f));
+
+    if (compatible) {
+      item.classList.remove('filtered-out');
+      item.classList.add('filtered-in');
+    } else {
+      item.classList.add('filtered-out');
+      item.classList.remove('filtered-in');
+    }
+  });
+
+  // Compter les compatibles dans l'onglet actif
+  itemsOnglet.forEach(item => {
+    totalVisibles++;
+    if (item.classList.contains('filtered-in')) compatiblesVisibles++;
+  });
+
+  // Noms des filtres actifs
+  const nomsMap = {
+    gluten: 'Gluten', poisson: 'Poisson', crustaces: 'Crustacés',
+    mollusques: 'Mollusques', soja: 'Soja', celeri: 'Céleri',
+    moutarde: 'Moutarde', sesame: 'Sésame', lupin: 'Lupin', aneth: 'Aneth'
+  };
+  const noms = [...filtresActifs].map(f => nomsMap[f] || f).join(', ');
+
+  resultText.innerHTML = `Filtre actif : <strong>Sans ${noms}</strong> — <strong>${compatiblesVisibles} plat${compatiblesVisibles > 1 ? 's' : ''}</strong> compatible${compatiblesVisibles > 1 ? 's' : ''} sur cet onglet`;
+  result.classList.add('visible');
+}
+</script>
+</body>
+</html>
