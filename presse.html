@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presse & Avis — L'Orfèvre</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.distinctions { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin-top: 56px; }
+.distinction-card { background: var(--charbon); border: 1px solid rgba(255,255,255,0.04); padding: 40px; text-align: center; transition: all 0.3s; }
+.distinction-card:hover { border-color: rgba(201,168,76,0.25); }
+.distinction-icon { font-size: 40px; margin-bottom: 16px; }
+.distinction-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--or-pale); margin-bottom: 8px; }
+.distinction-year { font-size: 10px; letter-spacing: 2px; color: var(--texte-doux); text-transform: uppercase; }
+.presse-articles { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 56px; }
+.article-card { background: var(--charbon); border: 1px solid rgba(255,255,255,0.04); padding: 40px; transition: all 0.3s; }
+.article-card:hover { border-color: rgba(201,168,76,0.2); }
+.article-source { font-size: 9px; letter-spacing: 3px; color: var(--or); text-transform: uppercase; margin-bottom: 12px; }
+.article-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #fff; margin-bottom: 14px; line-height: 1.3; }
+.article-excerpt { font-size: 12px; color: var(--texte-doux); line-height: 1.9; font-style: italic; }
+.article-date { font-size: 10px; color: var(--texte-doux); margin-top: 16px; letter-spacing: 1px; }
+.avis-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; margin-top: 56px; }
+.avis-card { background: var(--charbon); border: 1px solid rgba(255,255,255,0.04); padding: 36px; transition: all 0.3s; }
+.avis-card:hover { border-color: rgba(201,168,76,0.15); }
+.avis-stars { color: var(--or); font-size: 15px; margin-bottom: 16px; letter-spacing: 3px; }
+.avis-text { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic; color: var(--texte); line-height: 1.7; margin-bottom: 16px; }
+.avis-author { font-size: 10px; letter-spacing: 2px; color: var(--texte-doux); text-transform: uppercase; }
+.avis-source { font-size: 9px; color: var(--or); letter-spacing: 1px; margin-top: 4px; }
+@media(max-width:768px) {
+  .distinctions { grid-template-columns: repeat(2,1fr); }
+  .presse-articles { grid-template-columns: 1fr; }
+  .avis-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<canvas id="particlesCanvas"></canvas>
+<!-- TRANSITION PAGE -->
+<div id="page-transition">
+  <div class="pt-logo-name">L'Orfèvre</div>
+  <div class="pt-line"></div>
+  <div class="pt-logo-sub">Gastronomie française · Paris</div>
+</div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<nav id="navbar">
+  <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="menu.html">Menu</a></li>
+    <li><a href="chef.html">Le Chef</a></li>
+    <li><a href="evenements.html">Événements</a></li>
+  </ul>
+  <a href="index.html" class="nav-logo"><div class="nav-logo-name">L'Orfèvre</div><div class="nav-logo-sub">Gastronomie française · Paris</div></a>
+  <ul class="nav-links" style="justify-content:flex-end;">
+    <li><a href="presse.html" class="active">Presse</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="reservation.html" class="nav-reserve">Réserver</a></li>
+  </ul>
+</nav>
+
+<section class="page-hero">
+  <div class="page-hero-content">
+    <div class="page-eyebrow">✦ Ils parlent de nous</div>
+    <h1 class="page-title">Presse & <em data-typewriter data-delay="400">Distinctions</em></h1>
+    <div class="gold-line"></div>
+    <p class="page-subtitle">Prix · Articles · Avis clients</p>
+  </div>
+</section>
+
+<section class="section" style="background:var(--noir-doux);">
+  <div class="section-eyebrow">✦ Distinctions</div>
+  <div class="section-title">Nos <em>Récompenses</em></div>
+  <div class="gold-line"></div>
+  <div class="distinctions">
+    <div class="distinction-card reveal"><div class="distinction-icon">⭐⭐</div><div class="distinction-title">2 Étoiles Michelin</div><div class="distinction-year">Depuis 2023</div></div>
+    <div class="distinction-card reveal" style="transition-delay:0.1s;"><div class="distinction-icon">🏆</div><div class="distinction-title">17/20 Gault & Millau</div><div class="distinction-year">2025</div></div>
+    <div class="distinction-card reveal" style="transition-delay:0.2s;"><div class="distinction-icon">🥇</div><div class="distinction-title">Top 50 Paris</div><div class="distinction-year">TripAdvisor 2025</div></div>
+    <div class="distinction-card reveal" style="transition-delay:0.3s;"><div class="distinction-icon">💎</div><div class="distinction-title">Excellence Award</div><div class="distinction-year">OpenTable 2024</div></div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--charbon);">
+  <div class="section-eyebrow">✦ Revue de presse</div>
+  <div class="section-title">Ce qu'on dit de <em>nous</em></div>
+  <div class="gold-line"></div>
+  <div class="presse-articles">
+    <div class="article-card reveal">
+      <div class="article-source">Le Monde · Gastronomie</div>
+      <div class="article-title">« L'Orfèvre, la nouvelle référence de la gastronomie parisienne »</div>
+      <div class="article-excerpt">Alexandre Moreau signe une cuisine d'une précision admirable, où chaque assiette témoigne d'une maîtrise technique absolue mise au service d'une générosité sans faille.</div>
+      <div class="article-date">Mars 2025</div>
+    </div>
+    <div class="article-card reveal" style="transition-delay:0.1s;">
+      <div class="article-source">Le Figaro · Culture & Gastronomie</div>
+      <div class="article-title">« Deux étoiles bien méritées pour ce chef discret et talentueux »</div>
+      <div class="article-excerpt">Loin de l'agitation médiatique, Alexandre Moreau travaille dans l'ombre pour livrer des assiettes d'une beauté et d'une profondeur rares. L'Orfèvre s'impose comme une adresse incontournable.</div>
+      <div class="article-date">Janvier 2024</div>
+    </div>
+    <div class="article-card reveal">
+      <div class="article-source">Gault & Millau</div>
+      <div class="article-title">« Un 17/20 amplement justifié, avec des étoiles plein les yeux »</div>
+      <div class="article-excerpt">Le foie gras en terrine et le soufflé Grand Marnier sont à eux seuls des raisons de traverser Paris. Une table qui conjugue élégance, émotion et sincérité.</div>
+      <div class="article-date">Édition 2025</div>
+    </div>
+    <div class="article-card reveal" style="transition-delay:0.1s;">
+      <div class="article-source">The Guardian · Travel</div>
+      <div class="article-title">« The best fine dining experience in Paris right now »</div>
+      <div class="article-excerpt">Chef Moreau's cooking is quietly brilliant — technically flawless yet deeply emotional. L'Orfèvre is the restaurant Paris deserves, and the one every visitor should seek out.</div>
+      <div class="article-date">Septembre 2024</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--noir);">
+  <div class="section-eyebrow">✦ Ce que disent nos clients</div>
+  <div class="section-title">Avis <em>vérifiés</em></div>
+  <div class="gold-line"></div>
+  <div style="display:flex;gap:48px;margin-bottom:48px;flex-wrap:wrap;">
+    <div><div style="font-family:'Cormorant Garamond',serif;font-size:56px;color:var(--or);line-height:1;">4.9</div><div style="font-size:20px;color:var(--or);margin:4px 0;">★★★★★</div><div style="font-size:10px;color:var(--texte-doux);letter-spacing:2px;">Sur 847 avis Google</div></div>
+    <div><div style="font-family:'Cormorant Garamond',serif;font-size:56px;color:var(--or);line-height:1;">4.8</div><div style="font-size:20px;color:var(--or);margin:4px 0;">★★★★★</div><div style="font-size:10px;color:var(--texte-doux);letter-spacing:2px;">Sur TripAdvisor</div></div>
+  </div>
+  <div class="avis-grid">
+    <div class="avis-card reveal"><div class="avis-stars">★★★★★</div><div class="avis-text">« Une expérience gastronomique hors du commun. Le foie gras et le soufflé Grand Marnier resteront gravés dans ma mémoire. Service impeccable de bout en bout. »</div><div class="avis-author">Marie L.</div><div class="avis-source">Google Reviews</div></div>
+    <div class="avis-card reveal" style="transition-delay:0.1s;"><div class="avis-stars">★★★★★</div><div class="avis-text">« Le chef Moreau réussit l'exploit de rendre la grande cuisine accessible et profondément émotionnelle. Chaque plat est une œuvre d'art vivante. »</div><div class="avis-author">Thomas B.</div><div class="avis-source">TripAdvisor</div></div>
+    <div class="avis-card reveal" style="transition-delay:0.2s;"><div class="avis-stars">★★★★★</div><div class="avis-text">« Cadre somptueux, accueil chaleureux, cuisine sublime. Nous avons fêté notre anniversaire ici et ce fut une soirée absolument inoubliable. »</div><div class="avis-author">Sophie & Jean-Marc</div><div class="avis-source">Google Reviews</div></div>
+    <div class="avis-card reveal"><div class="avis-stars">★★★★★</div><div class="avis-text">« Le homard et le mille-feuille étaient d'une perfection rare. Le sommelier nous a guidés avec passion. On reviendra sans hésiter pour le menu prestige. »</div><div class="avis-author">Julien R.</div><div class="avis-source">OpenTable</div></div>
+    <div class="avis-card reveal" style="transition-delay:0.1s;"><div class="avis-stars">★★★★★</div><div class="avis-text">« La masterclass du samedi matin est une expérience unique. Alexandre Moreau est généreux, pédagogue et passionné. Un souvenir gravé à jamais. »</div><div class="avis-author">Isabelle M.</div><div class="avis-source">Google Reviews</div></div>
+    <div class="avis-card reveal" style="transition-delay:0.2s;"><div class="avis-stars">★★★★★</div><div class="avis-text">« Privatisation pour mon mariage : coordination parfaite, menu sublimé, équipe aux petits soins. Tous nos invités ont été émerveillés. Merci infiniment. »</div><div class="avis-author">Camille & Pierre</div><div class="avis-source">TripAdvisor</div></div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="nav-logo-name" style="font-size:20px;letter-spacing:6px;">L'Orfèvre</div><div class="nav-logo-sub" style="margin-top:4px;">Gastronomie française · Paris</div><p>24 Rue du Faubourg Saint-Honoré<br>75008 Paris · +33 1 42 00 00 00</p></div>
+    <div class="footer-links"><h4>Pages</h4><ul><li><a href="index.html">Accueil</a></li><li><a href="menu.html">Menu & Vins</a></li><li><a href="chef.html">Le Chef</a></li><li><a href="evenements.html">Événements</a></li><li><a href="presse.html">Presse</a></li><li><a href="reservation.html">Réservation</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+    <div class="footer-links"><h4>Infos</h4><ul><li><a href="#">Mentions légales</a></li><li><a href="#">Confidentialité</a></li><li><a href="#">Bon cadeau</a></li><li><a href="#">Recrutement</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><p>© 2026 L'Orfèvre · Tous droits réservés</p><div class="footer-social"><a href="#">Instagram</a><a href="#">Facebook</a><a href="#">TripAdvisor</a></div></div>
+</footer>
+<div class="notif" id="notif"><div class="notif-title"></div><div class="notif-text"></div></div>
+<script src="main.js"></script>
+<!-- BOUTON SON -->
+<button id="sound-btn" title="Ambiance sonore">
+  <span class="sound-icon">♩</span>
+  <span class="sound-label">Ambiance</span>
+</button>
+</body>
+</html>
