@@ -155,11 +155,12 @@ if (cursor && ring) {
     var btn   = document.getElementById('sound-btn');
     var audio = document.getElementById('ambiance-audio');
     if (!btn || !audio) return;
-  var playing = false;
-  btn.addEventListener('click', function() {
-    if (!playing) {
+
+    var playing = false;
+
+    function startMusic() {
       audio.volume = 0;
-      audio.play();
+      audio.play().catch(function() {});
       var vol = 0;
       var iv = setInterval(function() {
         vol = Math.min(0.28, vol + 0.01);
@@ -169,7 +170,10 @@ if (cursor && ring) {
       playing = true;
       btn.classList.add('active');
       btn.innerHTML = '<span class="sound-icon">♪</span><span class="sound-label">On</span>';
-    } else {
+      sessionStorage.setItem('ambiancePlaying', 'true');
+    }
+
+    function stopMusic() {
       var iv2 = setInterval(function() {
         audio.volume = Math.max(0, audio.volume - 0.01);
         if (audio.volume <= 0) { clearInterval(iv2); audio.pause(); }
@@ -177,8 +181,17 @@ if (cursor && ring) {
       playing = false;
       btn.classList.remove('active');
       btn.innerHTML = '<span class="sound-icon">♪</span><span class="sound-label">Ambiance</span>';
+      sessionStorage.setItem('ambiancePlaying', 'false');
     }
-  });
+
+    btn.addEventListener('click', function() {
+      if (!playing) { startMusic(); } else { stopMusic(); }
+    });
+
+    // Reprendre automatiquement si actif sur la page précédente
+    if (sessionStorage.getItem('ambiancePlaying') === 'true') {
+      startMusic();
+    }
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', setup);
