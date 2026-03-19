@@ -151,9 +151,10 @@ if (cursor && ring) {
 // 5. SON D'AMBIANCE
 // ─────────────────────────────────────────
 (function initAmbiance() {
-  var btn   = document.getElementById('sound-btn');
-  var audio = document.getElementById('ambiance-audio');
-  if (!btn || !audio) return;
+  function setup() {
+    var btn   = document.getElementById('sound-btn');
+    var audio = document.getElementById('ambiance-audio');
+    if (!btn || !audio) return;
   var playing = false;
   btn.addEventListener('click', function() {
     if (!playing) {
@@ -178,6 +179,12 @@ if (cursor && ring) {
       btn.innerHTML = '<span class="sound-icon">♪</span><span class="sound-label">Ambiance</span>';
     }
   });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setup);
+  } else {
+    setup();
+  }
 })();
 
 // ─────────────────────────────────────────
