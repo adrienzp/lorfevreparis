@@ -82,10 +82,9 @@
     <div class="contact-block reveal">
       <div class="contact-icon">🕐</div>
       <div class="contact-title">Horaires</div>
-      <div class="contact-line"><span>Lundi</span><span class="horaire-fermé">Fermé</span></div>
-      <div class="contact-line"><span>Mardi – Jeudi</span><span>12h–14h · 19h30–22h</span></div>
-      <div class="contact-line"><span>Vendredi – Samedi</span><span>12h–14h · 19h30–23h</span></div>
-      <div class="contact-line"><span>Dimanche</span><span>12h–15h</span></div>
+      <div id="horaires-container">
+        <div class="contact-line"><span style="color:var(--texte-doux);font-size:11px;letter-spacing:1px;">Chargement…</span></div>
+      </div>
     </div>
     <div class="contact-block reveal">
       <div class="contact-icon">📞</div>
@@ -151,5 +150,41 @@
 </button>
 <audio id="ambiance-audio" src="ambiance.mp3" loop preload="auto" style="display:none"></audio>
 <script src="main.js"></script>
+<script>
+(function loadHoraires() {
+  var container = document.getElementById('horaires-container');
+  if (!container) return;
+
+  var DAY_NAMES = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+  var ORDER = [1, 2, 3, 4, 5, 6, 0]; // Lun → Dim
+
+  function fmt(t) { return t ? t.slice(0,5).replace(':', 'h') : ''; }
+
+  function renderDay(dayIndex, schedule) {
+    var name = DAY_NAMES[dayIndex];
+    var html = '<div class="contact-line"><span>' + name + '</span>';
+    if (!schedule || !schedule.open) {
+      html += '<span class="horaire-fermé">Fermé</span>';
+    } else {
+      var parts = [];
+      if (schedule.lunch) parts.push(fmt(schedule.lunch.start) + '–' + fmt(schedule.lunch.end));
+      if (schedule.dinner) parts.push(fmt(schedule.dinner.start) + '–' + fmt(schedule.dinner.end));
+      html += '<span>' + (parts.length ? parts.join(' · ') : 'Ouvert') + '</span>';
+    }
+    return html + '</div>';
+  }
+
+  fetch('https://restaurant-reservation-9r5p.vercel.app/api/public/lorfevreparis')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var schedule = data.horaires;
+      if (!schedule) return; // pas de daily_schedule configuré, on garde le fallback
+      container.innerHTML = ORDER.map(function(d) {
+        return renderDay(d, schedule[String(d)]);
+      }).join('');
+    })
+    .catch(function() {}); // silencieux — le contenu hardcodé resterait visible
+})();
+</script>
 </body>
 </html>
