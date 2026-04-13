@@ -228,6 +228,54 @@ function showNotif(title, text) {
   setTimeout(() => notif.classList.remove('show'), 4000);
 }
 
+// ─────────────────────────────────────────
+// 8. POPUP ÉVÉNEMENT (depuis BurstFlow)
+// ─────────────────────────────────────────
+(function initEventPopup() {
+  var POPUP_KEY = 'bf_popup_seen';
+  if (sessionStorage.getItem(POPUP_KEY)) return;
+
+  fetch('https://restaurant-reservation-9r5p.vercel.app/api/public/lorfevreparis')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var popup = (data.events || []).find(function(e) { return e.show_popup; });
+      if (!popup) return;
+
+      sessionStorage.setItem(POPUP_KEY, '1');
+
+      var overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9000;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px);';
+
+      var date = '';
+      if (popup.starts_at) {
+        var d = new Date(popup.starts_at);
+        date = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+      }
+
+      overlay.innerHTML =
+        '<div style="background:#12100e;border:1px solid rgba(201,168,76,0.25);max-width:480px;width:100%;padding:48px 40px;position:relative;text-align:center;">' +
+          (popup.image_url ? '<img src="' + popup.image_url + '" style="width:100%;height:180px;object-fit:cover;margin-bottom:28px;">' : '') +
+          '<p style="font-size:9px;letter-spacing:3px;color:#c9a84c;text-transform:uppercase;margin:0 0 16px;">✦ Événement</p>' +
+          '<h2 style="font-family:\'Cormorant Garamond\',serif;font-size:28px;color:#fff;font-weight:400;margin:0 0 12px;">' + popup.title + '</h2>' +
+          (date ? '<p style="font-size:12px;color:#c9a84c;margin:0 0 16px;">' + date + '</p>' : '') +
+          (popup.description ? '<p style="font-size:12px;color:#aaa;line-height:1.8;margin:0 0 28px;">' + popup.description + '</p>' : '') +
+          '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">' +
+            (popup.registration_url
+              ? '<a href="' + popup.registration_url + '" target="_blank" style="background:#c9a84c;color:#000;padding:12px 28px;text-decoration:none;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">S\'inscrire</a>'
+              : '<a href="reservation.html" style="background:#c9a84c;color:#000;padding:12px 28px;text-decoration:none;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Réserver</a>') +
+            '<button onclick="this.closest(\'[data-bf-overlay]\').remove()" style="background:none;border:1px solid rgba(201,168,76,0.3);color:#c9a84c;padding:12px 28px;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;">Plus tard</button>' +
+          '</div>' +
+          '<button onclick="this.closest(\'[data-bf-overlay]\').remove()" style="position:absolute;top:12px;right:12px;background:none;border:none;color:#666;font-size:18px;cursor:pointer;line-height:1;">✕</button>' +
+        '</div>';
+
+      overlay.setAttribute('data-bf-overlay', '1');
+      overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+
+      setTimeout(function() { document.body.appendChild(overlay); }, 1500);
+    })
+    .catch(function() {});
+})();
+
 // Remove typewriter caret after typing done
 (function fixTypewriterCaret() {
   document.querySelectorAll('[data-typewriter]').forEach(el => {

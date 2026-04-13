@@ -71,67 +71,8 @@
   <div class="section-title">Expériences <em>exclusives</em></div>
   <div class="gold-line"></div>
   <p class="section-intro">Des soirées pensées pour prolonger le plaisir de la table et créer des souvenirs impérissables.</p>
-  <div class="events-grid">
-    <div class="event-card reveal">
-      <div class="event-visual">🥂</div>
-      <div class="event-body">
-        <span class="event-tag">✦ Chaque vendredi soir</span>
-        <div class="event-title">Dîner Accord Mets & Vins</div>
-        <div class="event-desc">Notre sommelier sélectionne 5 vins d'exception pour accompagner un menu dégustation 5 services imaginé spécialement pour la soirée.</div>
-        <div class="event-price">195€ / personne</div>
-        <a href="reservation.html" class="event-link">Réserver →</a>
-      </div>
-    </div>
-    <div class="event-card reveal" style="transition-delay:0.1s;">
-      <div class="event-visual">👨‍🍳</div>
-      <div class="event-body">
-        <span class="event-tag">✦ Samedi matin · 10h–13h</span>
-        <div class="event-title">Masterclass avec le Chef</div>
-        <div class="event-desc">3h en cuisine avec Alexandre Moreau. Techniques de la gastronomie française, recettes exclusives, déjeuner sur place. Maximum 8 participants.</div>
-        <div class="event-price">280€ / personne</div>
-        <a href="reservation.html" class="event-link">S'inscrire →</a>
-      </div>
-    </div>
-    <div class="event-card reveal" style="transition-delay:0.2s;">
-      <div class="event-visual">🌹</div>
-      <div class="event-body">
-        <span class="event-tag">✦ Sur réservation</span>
-        <div class="event-title">Table des Amoureux</div>
-        <div class="event-desc">Table isolée, menu surprise, pétales de rose, champagne en arrivant. Pour les moments qui comptent vraiment. Disponible tous les soirs.</div>
-        <div class="event-price">À partir de 320€ / couple</div>
-        <a href="reservation.html" class="event-link">Découvrir →</a>
-      </div>
-    </div>
-    <div class="event-card reveal">
-      <div class="event-visual">🎂</div>
-      <div class="event-body">
-        <span class="event-tag">✦ Toute l'année</span>
-        <div class="event-title">Anniversaire Prestige</div>
-        <div class="event-desc">Gâteau personnalisé, décoration florale, photos souvenir, message du chef en salle. Faites de chaque anniversaire un événement d'exception.</div>
-        <div class="event-price">Sur devis</div>
-        <a href="contact.html" class="event-link">Nous contacter →</a>
-      </div>
-    </div>
-    <div class="event-card reveal" style="transition-delay:0.1s;">
-      <div class="event-visual">🍾</div>
-      <div class="event-body">
-        <span class="event-tag">✦ Décembre · Janvier</span>
-        <div class="event-title">Réveillons & Fêtes</div>
-        <div class="event-desc">Noël, Saint-Sylvestre, jour de l'An — des menus spéciaux élaborés pour les fêtes, dans une salle décorée avec soin pour l'occasion.</div>
-        <div class="event-price">À partir de 220€</div>
-        <a href="reservation.html" class="event-link">Réserver →</a>
-      </div>
-    </div>
-    <div class="event-card reveal" style="transition-delay:0.2s;">
-      <div class="event-visual">🎁</div>
-      <div class="event-body">
-        <span class="event-tag">✦ Disponible en ligne</span>
-        <div class="event-title">Bon Cadeau</div>
-        <div class="event-desc">Offrez une expérience inoubliable. Bon cadeau personnalisé pour un dîner, une masterclass ou un menu dégustation. Valable 1 an.</div>
-        <div class="event-price">À partir de 100€</div>
-        <a href="contact.html" class="event-link">Commander →</a>
-      </div>
-    </div>
+  <div class="events-grid" id="events-grid">
+    <p style="color:var(--texte-doux);font-size:13px;letter-spacing:0.05em;">Chargement…</p>
   </div>
 </section>
 
@@ -164,6 +105,55 @@
 </footer>
 <div class="notif" id="notif"><div class="notif-title"></div><div class="notif-text"></div></div>
 <script src="main.js"></script>
+<script>
+(function loadEvents() {
+  const grid = document.getElementById('events-grid');
+  if (!grid) return;
+
+  fetch('https://restaurant-reservation-9r5p.vercel.app/api/public/lorfevreparis')
+    .then(r => r.json())
+    .then(function(data) {
+      var events = data.events || [];
+      if (!events.length) {
+        grid.innerHTML = '<p style="color:var(--texte-doux);font-size:13px;letter-spacing:0.05em;grid-column:1/-1;">Aucun événement en ce moment. Revenez bientôt.</p>';
+        return;
+      }
+      grid.innerHTML = events.map(function(ev, i) {
+        var delay = ['', 'style="transition-delay:0.1s;"', 'style="transition-delay:0.2s;"'][i % 3];
+        var visual = ev.image_url
+          ? '<div class="event-visual" style="background:none;"><img src="' + ev.image_url + '" style="width:100%;height:100%;object-fit:cover;" alt=""></div>'
+          : '<div class="event-visual">✦</div>';
+        var date = '';
+        if (ev.starts_at) {
+          var d = new Date(ev.starts_at);
+          date = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+        var cap = ev.capacity ? ' · ' + ev.capacity + ' pers. max' : '';
+        var tag = date ? '✦ ' + date + cap : '✦ Événement';
+        var link = ev.registration_url
+          ? '<a href="' + ev.registration_url + '" target="_blank" class="event-link">S\'inscrire →</a>'
+          : '<a href="reservation.html" class="event-link">Réserver →</a>';
+        return '<div class="event-card reveal" ' + delay + '>' +
+          visual +
+          '<div class="event-body">' +
+            '<span class="event-tag">' + tag + '</span>' +
+            '<div class="event-title">' + ev.title + '</div>' +
+            (ev.description ? '<div class="event-desc">' + ev.description + '</div>' : '') +
+          link +
+          '</div></div>';
+      }).join('');
+
+      // Réactiver les animations reveal
+      var obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+      }, { threshold: 0.1 });
+      grid.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
+    })
+    .catch(function() {
+      grid.innerHTML = '<p style="color:var(--texte-doux);font-size:13px;grid-column:1/-1;">Impossible de charger les événements.</p>';
+    });
+})();
+</script>
 <!-- BOUTON SON -->
 <button id="sound-btn" title="Ambiance sonore">
   <span class="sound-icon">♩</span>
