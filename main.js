@@ -1,5 +1,46 @@
 /* ============================================================
    L'ORFÈVRE — main.js
+   ============================================================ */
+
+// ─────────────────────────────────────────
+// 0. CHARGEMENT DONNÉES DEPUIS BURSTFLOW
+// ─────────────────────────────────────────
+const RESTAURANT_SLUG = 'lorfevreparis';
+const BURSTFLOW_API   = 'https://burstflow.fr/api/public/restaurant/' + RESTAURANT_SLUG;
+const JOURS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+
+function formatHoraire(schedule) {
+  if (!schedule?.open) return 'Fermé';
+  const parts = [];
+  if (schedule.lunch)  parts.push(schedule.lunch.start  + ' – ' + schedule.lunch.end);
+  if (schedule.dinner) parts.push(schedule.dinner.start + ' – ' + schedule.dinner.end);
+  return parts.length ? parts.join(' · ') : 'Ouvert';
+}
+
+async function loadRestaurantData() {
+  try {
+    const res  = await fetch(BURSTFLOW_API);
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.nom)       document.querySelectorAll('[data-bf="nom"]').forEach(el => el.textContent = data.nom);
+    if (data.telephone) document.querySelectorAll('[data-bf="telephone"]').forEach(el => { el.textContent = data.telephone; if (el.tagName === 'A') el.href = 'tel:' + data.telephone.replace(/\s/g,''); });
+    if (data.adresse)   document.querySelectorAll('[data-bf="adresse"]').forEach(el => el.textContent = data.adresse);
+    if (data.email)     document.querySelectorAll('[data-bf="email"]').forEach(el => { el.textContent = data.email; if (el.tagName === 'A') el.href = 'mailto:' + data.email; });
+    if (data.horaires) {
+      document.querySelectorAll('[data-bf="horaires"]').forEach(container => {
+        container.innerHTML = '';
+        [1,2,3,4,5,6,0].forEach(dayIndex => {
+          const sched = data.horaires[String(dayIndex)];
+          const row = document.createElement('div');
+          row.style.cssText = 'display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(201,168,76,0.1);font-size:12px;';
+          row.innerHTML = `<span style="color:var(--texte-doux)">${JOURS[dayIndex]}</span><span style="color:${sched?.open === false ? 'var(--texte-doux)' : 'var(--texte)'}">${formatHoraire(sched)}</span>`;
+          container.appendChild(row);
+        });
+      });
+    }
+  } catch(e) {}
+}
+document.addEventListener('DOMContentLoaded', loadRestaurantData);
    Effets : curseur traînée dorée, typewriter, particules,
             transition page, son ambiance, bouton liquide
    ============================================================ */
@@ -235,7 +276,7 @@ function showNotif(title, text) {
   var POPUP_KEY = 'bf_popup_seen';
   if (sessionStorage.getItem(POPUP_KEY)) return;
 
-  fetch('https://restaurant-reservation-9r5p.vercel.app/api/public/lorfevreparis')
+  fetch('https://burstflow.fr/api/public/restaurant/lorfevreparis')
     .then(function(r) { return r.json(); })
     .then(function(data) {
       var popup = (data.events || []).find(function(e) { return e.show_popup; });
