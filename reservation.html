@@ -69,12 +69,12 @@
     <div class="info-strip-item reveal">
       <div class="info-strip-icon">🕐</div>
       <div class="info-strip-title">Déjeuner</div>
-      <div class="info-strip-text">Mardi – Samedi<br>12h00 à 14h00</div>
+      <div class="info-strip-text" id="horaire-dejeuner">Mardi – Samedi<br>12h00 à 14h00</div>
     </div>
     <div class="info-strip-item reveal" style="transition-delay:0.1s;">
       <div class="info-strip-icon">🌙</div>
       <div class="info-strip-title">Dîner</div>
-      <div class="info-strip-text">Mardi – Samedi<br>19h30 à 22h30</div>
+      <div class="info-strip-text" id="horaire-diner">Mardi – Samedi<br>19h30 à 22h30</div>
     </div>
     <div class="info-strip-item reveal" style="transition-delay:0.2s;">
       <div class="info-strip-icon">👥</div>
@@ -121,7 +121,7 @@
 
 <footer>
   <div class="footer-inner">
-    <div class="footer-brand"><div class="nav-logo-name" style="font-size:20px;letter-spacing:6px;">L'Orfèvre</div><div class="nav-logo-sub" style="margin-top:4px;">Gastronomie française · Paris</div><p>24 Rue du Faubourg Saint-Honoré<br>75008 Paris · +33 1 42 00 00 00</p></div>
+    <div class="footer-brand"><div class="nav-logo-name" style="font-size:20px;letter-spacing:6px;">L'Orfèvre</div><div class="nav-logo-sub" style="margin-top:4px;">Gastronomie française · Paris</div><p><span data-bf="adresse">24 Rue du Faubourg Saint-Honoré, 75008 Paris</span><br><a data-bf="telephone" href="tel:+33142000000" style="color:inherit;text-decoration:none;">+33 1 42 00 00 00</a></p></div>
     <div class="footer-links"><h4>Pages</h4><ul><li><a href="index.html">Accueil</a></li><li><a href="menu.html">Menu & Vins</a></li><li><a href="chef.html">Le Chef</a></li><li><a href="evenements.html">Événements</a></li><li><a href="presse.html">Presse</a></li><li><a href="reservation.html">Réservation</a></li><li><a href="contact.html">Contact</a></li></ul></div>
     <div class="footer-links"><h4>Infos</h4><ul><li><a href="#">Mentions légales</a></li><li><a href="#">Confidentialité</a></li><li><a href="#">Bon cadeau</a></li><li><a href="#">Recrutement</a></li></ul></div>
   </div>
@@ -134,6 +134,42 @@
 document.getElementById('popup-reservation').addEventListener('click', function(e) {
   if (e.target === this) this.style.display = 'none';
 });
+
+// Horaires dynamiques depuis Burstflow
+(function loadHorairesReservation() {
+  var DAY_NAMES = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+  function fmt(t) { return t ? t.slice(0, 5).replace(':', 'h') : ''; }
+
+  fetch('https://burstflow.fr/api/public/restaurant/lorfevreparis')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var h = data.horaires;
+      if (!h) return;
+
+      // Jours ouverts au déjeuner et au dîner
+      var ORDER = [1, 2, 3, 4, 5, 6, 0];
+      var lunchDays = [], dinnerDays = [], lunchTime = '', dinnerTime = '';
+
+      ORDER.forEach(function(d) {
+        var s = h[String(d)];
+        if (!s || !s.open) return;
+        if (s.lunch) { lunchDays.push(DAY_NAMES[d]); if (!lunchTime) lunchTime = fmt(s.lunch.start) + ' à ' + fmt(s.lunch.end); }
+        if (s.dinner) { dinnerDays.push(DAY_NAMES[d]); if (!dinnerTime) dinnerTime = fmt(s.dinner.start) + ' à ' + fmt(s.dinner.end); }
+      });
+
+      function formatRange(days) {
+        if (!days.length) return '';
+        if (days.length === 1) return days[0];
+        return days[0] + ' – ' + days[days.length - 1];
+      }
+
+      var dejEl = document.getElementById('horaire-dejeuner');
+      var dinEl = document.getElementById('horaire-diner');
+      if (dejEl && lunchDays.length) dejEl.innerHTML = formatRange(lunchDays) + '<br>' + lunchTime;
+      if (dinEl && dinnerDays.length) dinEl.innerHTML = formatRange(dinnerDays) + '<br>' + dinnerTime;
+    })
+    .catch(function() {});
+})();
 </script>
 <!-- BOUTON SON -->
 <button id="sound-btn" title="Ambiance sonore">

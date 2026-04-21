@@ -41,6 +41,42 @@ async function loadRestaurantData() {
   } catch(e) {}
 }
 document.addEventListener('DOMContentLoaded', loadRestaurantData);
+
+// ─────────────────────────────────────────
+// 0b. CHARGEMENT CARTE DEPUIS BURSTFLOW
+// ─────────────────────────────────────────
+async function loadCarteData() {
+  try {
+    const res = await fetch(BURSTFLOW_API + '/carte');
+    if (!res.ok) return;
+    const { carte } = await res.json();
+    if (!carte || carte.length === 0) return;
+
+    // Pour chaque catégorie retournée par l'API, on met à jour l'onglet correspondant
+    carte.forEach(function(cat) {
+      const slug = cat.nom.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, '-');
+      const tab = document.getElementById(slug) || document.getElementById(cat.nom.toLowerCase());
+      if (!tab) return;
+
+      if (cat.articles.length === 0) return;
+
+      // Remplace le contenu de l'onglet par les articles de l'API
+      tab.innerHTML = cat.articles.map(function(a) {
+        return '<div class="menu-item reveal">' +
+          '<div class="menu-item-header">' +
+            '<span class="menu-item-name">' + a.nom + '</span>' +
+            '<span class="menu-item-price">' + (a.prix ? a.prix + '\u20ac' : '') + '</span>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    });
+  } catch(e) {}
+}
+document.addEventListener('DOMContentLoaded', loadCarteData);
+
+/* ============================================================
    Effets : curseur traînée dorée, typewriter, particules,
             transition page, son ambiance, bouton liquide
    ============================================================ */
