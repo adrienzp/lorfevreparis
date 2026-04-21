@@ -64,11 +64,21 @@ async function loadCarteData() {
 
       // Remplace le contenu de l'onglet par les articles de l'API
       tab.innerHTML = cat.articles.map(function(a) {
+        var allergenes = '';
+        if (a.allergenes) {
+          allergenes = '<div class="menu-item-allergenes">' +
+            a.allergenes.split(',').map(function(al) {
+              return '<div class="allergene-badge"><span>' + al.trim() + '</span></div>';
+            }).join('') +
+          '</div>';
+        }
         return '<div class="menu-item reveal">' +
           '<div class="menu-item-header">' +
             '<span class="menu-item-name">' + a.nom + '</span>' +
             '<span class="menu-item-price">' + (a.prix ? a.prix + '\u20ac' : '') + '</span>' +
           '</div>' +
+          (a.description ? '<div class="menu-item-desc">' + a.description + '</div>' : '') +
+          allergenes +
         '</div>';
       }).join('');
     });
