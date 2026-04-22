@@ -6,7 +6,7 @@
 // 0. CHARGEMENT DONNÉES DEPUIS BURSTFLOW
 // ─────────────────────────────────────────
 const RESTAURANT_SLUG = 'lorfevreparis';
-const BURSTFLOW_API   = 'https://burstflow.fr/api/public/restaurant/' + RESTAURANT_SLUG;
+const BURSTFLOW_API   = 'https://www.burstflow.fr/api/public/restaurant/' + RESTAURANT_SLUG;
 const JOURS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
 
 function formatHoraire(schedule) {
@@ -322,7 +322,7 @@ function showNotif(title, text) {
   var POPUP_KEY = 'bf_popup_seen';
   if (sessionStorage.getItem(POPUP_KEY)) return;
 
-  fetch('https://burstflow.fr/api/public/restaurant/lorfevreparis')
+  fetch('https://www.burstflow.fr/api/public/restaurant/lorfevreparis')
     .then(function(r) { return r.json(); })
     .then(function(data) {
       var popup = (data.events || []).find(function(e) { return e.show_popup; });

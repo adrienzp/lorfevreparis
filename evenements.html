@@ -110,7 +110,7 @@
   const grid = document.getElementById('events-grid');
   if (!grid) return;
 
-  fetch('https://burstflow.fr/api/public/restaurant/lorfevreparis')
+  fetch('https://www.burstflow.fr/api/public/restaurant/lorfevreparis')
     .then(r => r.json())
     .then(function(data) {
       var events = data.events || [];

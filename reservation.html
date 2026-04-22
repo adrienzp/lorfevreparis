@@ -140,7 +140,7 @@ document.getElementById('popup-reservation').addEventListener('click', function(
   var DAY_NAMES = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
   function fmt(t) { return t ? t.slice(0, 5).replace(':', 'h') : ''; }
 
-  fetch('https://burstflow.fr/api/public/restaurant/lorfevreparis')
+  fetch('https://www.burstflow.fr/api/public/restaurant/lorfevreparis')
     .then(function(r) { return r.json(); })
     .then(function(data) {
       var h = data.horaires;
