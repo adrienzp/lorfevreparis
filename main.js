@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', loadRestaurantData);
 
 // ─────────────────────────────────────────
 // 0b. CHARGEMENT CARTE DEPUIS BURSTFLOW
+// Génère les onglets et le contenu dynamiquement
 // ─────────────────────────────────────────
 async function loadCarteData() {
   try {
@@ -52,36 +53,65 @@ async function loadCarteData() {
     const { carte } = await res.json();
     if (!carte || carte.length === 0) return;
 
-    // Pour chaque catégorie retournée par l'API, on met à jour l'onglet correspondant
-    carte.forEach(function(cat) {
-      const slug = cat.nom.toLowerCase()
+    const tabsContainer  = document.getElementById('bf-tabs');
+    const sectionsContainer = document.getElementById('bf-sections');
+    if (!tabsContainer || !sectionsContainer) return;
+
+    // Vide le "Chargement…"
+    tabsContainer.innerHTML = '';
+    sectionsContainer.innerHTML = '';
+
+    carte.forEach(function(cat, index) {
+      // Génère un id propre depuis le nom de la catégorie
+      const id = cat.nom.toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .replace(/\s+/g, '-');
-      const tab = document.getElementById(slug) || document.getElementById(cat.nom.toLowerCase());
-      if (!tab) return;
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
 
-      if (cat.articles.length === 0) return;
+      // ── Onglet ──
+      const btn = document.createElement('button');
+      btn.className = 'menu-tab' + (index === 0 ? ' active' : '');
+      btn.textContent = cat.nom;
+      btn.onclick = function() { showTab(id, btn); };
+      tabsContainer.appendChild(btn);
 
-      // Remplace le contenu de l'onglet par les articles de l'API
-      tab.innerHTML = cat.articles.map(function(a) {
-        var allergenes = '';
-        if (a.allergenes) {
-          allergenes = '<div class="menu-item-allergenes">' +
-            a.allergenes.split(',').map(function(al) {
-              return '<div class="allergene-badge"><span>' + al.trim() + '</span></div>';
-            }).join('') +
+      // ── Section ──
+      const section = document.createElement('div');
+      section.className = 'menu-content' + (index === 0 ? ' active' : '');
+      section.id = id;
+
+      if (!cat.articles || cat.articles.length === 0) {
+        section.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--texte-doux);padding:40px 0;">Aucun article disponible pour le moment.</div>';
+      } else {
+        section.innerHTML = cat.articles.map(function(a) {
+          var allergenesHtml = '';
+          if (a.allergenes) {
+            allergenesHtml = '<div class="menu-item-allergenes">' +
+              a.allergenes.split(',').map(function(al) {
+                return '<div class="allergene-badge"><span>' + al.trim() + '</span></div>';
+              }).join('') +
+            '</div>';
+          }
+          return '<div class="menu-item reveal" data-allergenes="' + (a.allergenes || '') + '">' +
+            '<div class="menu-item-header">' +
+              '<span class="menu-item-name">' + a.nom + '</span>' +
+              '<span class="menu-item-price">' + (a.prix ? a.prix + '\u20ac' : '') + '</span>' +
+            '</div>' +
+            (a.description ? '<div class="menu-item-desc">' + a.description + '</div>' : '') +
+            allergenesHtml +
           '</div>';
-        }
-        return '<div class="menu-item reveal">' +
-          '<div class="menu-item-header">' +
-            '<span class="menu-item-name">' + a.nom + '</span>' +
-            '<span class="menu-item-price">' + (a.prix ? a.prix + '\u20ac' : '') + '</span>' +
-          '</div>' +
-          (a.description ? '<div class="menu-item-desc">' + a.description + '</div>' : '') +
-          allergenes +
-        '</div>';
-      }).join('');
+        }).join('');
+      }
+
+      sectionsContainer.appendChild(section);
     });
+
+    // Re-applique l'observer d'animation sur les nouveaux éléments
+    const revealObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    sectionsContainer.querySelectorAll('.reveal').forEach(function(el) { revealObs.observe(el); });
+
   } catch(e) {}
 }
 document.addEventListener('DOMContentLoaded', loadCarteData);

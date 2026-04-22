@@ -308,18 +308,18 @@
     <span id="filtre-result-text"></span>
   </div>
 
-  <!-- TABS -->
-  <div class="menu-tabs">
-    <button class="menu-tab active" onclick="showTab('entrees',this)">Entrées</button>
-    <button class="menu-tab" onclick="showTab('plats',this)">Plats</button>
-    <button class="menu-tab" onclick="showTab('desserts',this)">Desserts</button>
-    <button class="menu-tab" onclick="showTab('vins',this)">Carte des Vins</button>
+  <!-- TABS (générés dynamiquement par main.js depuis Burstflow) -->
+  <div class="menu-tabs" id="bf-tabs">
+    <div style="color:var(--texte-doux);font-size:10px;letter-spacing:2px;padding:16px 32px;">Chargement…</div>
   </div>
 
+  <!-- SECTIONS (générées dynamiquement par main.js depuis Burstflow) -->
+  <div id="bf-sections"></div>
+
   <!-- ═══════════════════════════════════════════ -->
-  <!-- ENTRÉES -->
+  <!-- CONTENU STATIQUE DE SECOURS (masqué par défaut, affiché si l'API échoue) -->
   <!-- ═══════════════════════════════════════════ -->
-  <div class="menu-content active" id="entrees">
+  <div class="menu-content active" id="entrees" style="display:none;">
 
     <!-- Foie Gras : gluten (brioche), soja possible -->
     <div class="menu-item reveal" data-allergenes="gluten">
@@ -390,7 +390,7 @@
   <!-- ═══════════════════════════════════════════ -->
   <!-- PLATS -->
   <!-- ═══════════════════════════════════════════ -->
-  <div class="menu-content" id="plats">
+  <div class="menu-content" id="plats" style="display:none;">
 
     <!-- Bœuf Rossini : gluten (sauce Périgueux), céleri -->
     <div class="menu-item reveal" data-allergenes="gluten celeri">
@@ -462,7 +462,7 @@
   <!-- ═══════════════════════════════════════════ -->
   <!-- DESSERTS -->
   <!-- ═══════════════════════════════════════════ -->
-  <div class="menu-content" id="desserts">
+  <div class="menu-content" id="desserts" style="display:none;">
 
     <!-- Soufflé Grand Marnier : gluten -->
     <div class="menu-item reveal" data-allergenes="gluten">
@@ -531,7 +531,7 @@
   <!-- ═══════════════════════════════════════════ -->
   <!-- VINS -->
   <!-- ═══════════════════════════════════════════ -->
-  <div class="menu-content" id="vins">
+  <div class="menu-content" id="vins" style="display:none;">
     <div style="grid-column:1/-1;">
       <p class="wine-intro">Notre cave compte plus de 400 références soigneusement sélectionnées par notre sommelier. Découvrez une sélection de nos coups de cœur, disponibles au verre ou à la bouteille.</p>
     </div>
@@ -662,8 +662,8 @@ function applyFiltres() {
   const result = document.getElementById('filtre-result');
   const resultText = document.getElementById('filtre-result-text');
 
-  // Tous les plats (entrées + plats + desserts, pas les vins)
-  const allItems = document.querySelectorAll('#entrees .menu-item, #plats .menu-item, #desserts .menu-item');
+  // Tous les plats des sections dynamiques Burstflow
+  const allItems = document.querySelectorAll('#bf-sections .menu-item');
 
   if (filtresActifs.size === 0) {
     // Aucun filtre → tout afficher
